@@ -532,3 +532,42 @@ procdump(void)
     cprintf("\n");
   }
 }
+
+//Custom function for setting priority
+int setPriority(int priority) {
+	struct proc* this_proc;
+	struct proc* min_proc;
+	struct cpu *c = mycpu();
+
+	c->proc = 0;
+
+	for(;;) {
+		sti() // Allow interrupts to occur for this process
+		acquire(&ptable.lock);
+		this_proc = ptable.proc;
+		while (this_proc < &ptable.lock[NPROC]) {
+			if (this_proc->state != RUNNABLE) {
+				p++;
+				continue;
+			}
+			for (min_proc = ptable.proc; min_proc < &ptable.proc[NPROC]; min_proc++) {
+				if (min_proc->state != RUNNABLE) {
+					continue;
+				}
+				else {
+					if (min_proc->priority < this_proc->priority) {
+						this_proc = min_proc;
+					}
+				}
+			}
+			c->proc = this_proc;
+			switchuvm(this_proc);
+			this_proc->state = RUNNING;
+			switch(&(c->scheduler), this_proc->context);
+			switchkvm();
+
+			c->proc = 0;
+		}
+		release(&ptable.lock);
+	} 
+}
