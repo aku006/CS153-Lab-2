@@ -23,7 +23,6 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
-int setPriority(int);
 
 // ulib.c
 int stat(const char*, struct stat*);
@@ -38,3 +37,5 @@ void* memset(void*, int, uint);
 void* malloc(uint);
 void free(void*);
 int atoi(const char*);
+int waitpid(int pid, int *status, int options);
+int setpriority(int priority);

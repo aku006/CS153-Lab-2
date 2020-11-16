@@ -533,8 +533,20 @@ procdump(void)
   }
 }
 
+int setpriority(int priority) {
+	struct proc* this_proc = myproc();
+	if (priority > 31) {
+		priority = 31;
+	}
+	else if (priority < 0) {
+		priority = 0;
+	}
+	this_proc->priority = priority;
+	return this_proc->priority;
+}
+
 //Custom function for setting priority
-int setPriority(int priority) {
+void scheduler(void) {
 	struct proc* this_proc;
 	struct proc* min_proc;
 	struct cpu *c = mycpu();

@@ -91,7 +91,7 @@ sys_uptime(void)
 }
 
 int
-sys_setPriority(int priority)
+sys_setpriority(int priority)
 {
 	if (argint(0, &priority) < 0) {
 		return -1;
