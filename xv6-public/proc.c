@@ -318,7 +318,18 @@ wait(void)
 //  - choose a process to run
 //  - swtch to start running that process
 //  - eventually that process transfers control
-//      via swtch back to the scheduler.
+//      via swtch back to the scheduler
+int setpriority(int priority) {
+    struct proc*p = myproc();
+    if(priority > 31) {
+       priority = 31;
+    }
+    else if(priority < 0) {
+      priority = 0;
+    }
+    p->priority = priority;
+    return p->priority;
+}.
 void
 scheduler(void)
 {

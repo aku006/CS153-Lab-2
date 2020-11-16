@@ -37,4 +37,4 @@ void* memset(void*, int, uint);
 void* malloc(uint);
 void free(void*);
 int atoi(const char*);
-int setPriority(int priority); // We created our set priority function
+int setpriority(int priority); // We created our set priority function
