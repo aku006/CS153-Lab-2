@@ -38,3 +38,5 @@ void* malloc(uint);
 void free(void*);
 int atoi(const char*);
 int setpriority(int priority); // We created our set priority function
+int lab2(void);
+int hello(void);

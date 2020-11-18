@@ -329,11 +329,12 @@ int setpriority(int priority) {
     }
     p->priority = priority;
     return p->priority;
-}.
+}
 void
 scheduler(void)
 {
   struct proc *p;
+  struct proc *minProc;
   struct cpu *c = mycpu();
   c->proc = 0;
   
@@ -343,9 +344,20 @@ scheduler(void)
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
+    p=ptable.proc;
+    while(p < &table.proc[NPROC]) {
+	if(p->state != RUNNABLE) {
+	  p++;
+          continue;
+          }
+    for(minProc = ptable.proc; minProc < &ptable.proc[NPROC]; minProc++){
+      if(minProc->state != RUNNABLE)
         continue;
+      else {
+       if(minProc->priority < p->priority)
+       p=minProc;
+      }
+  }
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
@@ -360,7 +372,20 @@ scheduler(void)
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       c->proc = 0;
-    }
+      for(minProc=ptable.proc; minProc < &ptable.proc[NPROC]; minProc++) {
+        if(minProc == p) {
+          if(minProc->priority < 31) {
+               minProc->priority += 1;
+          }
+       }
+       else {
+        if(minProc->state == RUNNABLE) {
+          if(minProc->priority > 0) 
+            minProc->priority -= 1;
+          }
+      }
+   }
+ }
     release(&ptable.lock);
 
   }

@@ -91,11 +91,21 @@ sys_uptime(void)
 }
 
 int 
-sys_setPriority(int priority)
+sys_setpriority(int priority)
 {
    if(argint(0, &priority) < 0) {
       return -1;
     }
-    return setPriority(priority);
+    return setpriority(priority);
 }
 
+int 
+sys_lab2(void) {
+ return 0;
+}
+
+int 
+sys_hello(void) {
+ cprintf("hello from the kernel"),
+ return 0;
+}
