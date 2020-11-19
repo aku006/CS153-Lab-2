@@ -31,4 +31,5 @@ SYSCALL(sleep)
 SYSCALL(uptime)
 SYSCALL(setpriority)  //Added new syscall
 SYSCALL(lab2)
-SYSCALL(hello)
+SYSCALL(setpriority)
+

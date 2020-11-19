@@ -310,6 +310,17 @@ wait(void)
     sleep(curproc, &ptable.lock);  //DOC: wait-sleep
   }
 }
+int setpriority(int priority)   {
+    struct proc* p = myproc();
+    if(priority > 31)   {
+       priority = 31;	    
+    }
+    else if(priority < 0)   {
+       priority = 0;
+    }
+    p->priority = priority;
+    return p->priority;
+}
 
 //PAGEBREAK: 42
 // Per-CPU process scheduler.
@@ -319,22 +330,12 @@ wait(void)
 //  - swtch to start running that process
 //  - eventually that process transfers control
 //      via swtch back to the scheduler
-int setpriority(int priority) {
-    struct proc*p = myproc();
-    if(priority > 31) {
-       priority = 31;
-    }
-    else if(priority < 0) {
-      priority = 0;
-    }
-    p->priority = priority;
-    return p->priority;
-}
+
 void
 scheduler(void)
 {
   struct proc *p;
-  struct proc *minProc;
+  struct proc* minProc;
   struct cpu *c = mycpu();
   c->proc = 0;
   
@@ -345,19 +346,19 @@ scheduler(void)
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     p=ptable.proc;
-    while(p < &ptable.proc[NPROC]) {
-	if(p->state != RUNNABLE) {
-	  p++;
-          continue;
-          }
-    for(minProc = ptable.proc; minProc < &ptable.proc[NPROC]; minProc++){
-      if(minProc->state != RUNNABLE)
-        continue;
-      else {
-       if(minProc->priority < p->priority)
-       p=minProc;
-      }
-  }
+     while(p < &ptable.proc[NPROC])   {
+         if(p->state != RUNNABLE)   {
+             p++;
+             continue;
+	 }
+     for(minProc=ptable.proc; minProc < &ptable.proc[NPROC]; minProc++)   {
+            if(minProc->state != RUNNABLE)
+                continue;
+            else   {
+               if(minProc->priority < p->priority) 
+               p=minProc;
+            } 
+      }  
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
@@ -372,23 +373,22 @@ scheduler(void)
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       c->proc = 0;
-      for(minProc=ptable.proc; minProc < &ptable.proc[NPROC]; minProc++) {
-        if(minProc == p) {
-          if(minProc->priority < 31) {
-               minProc->priority += 1;
-          }
-       }
-       else {
-        if(minProc->state == RUNNABLE) {
-          if(minProc->priority > 0) 
-            minProc->priority -= 1;
-          }
-      }
+      for(minProc=ptable.proc; minProc < &ptable.proc[NPROC]; minProc++)  {
+           if(minProc == p)   {
+                if(minProc->priority < 31)   {
+		    minProc->priority += 1;
+                }
+           }
+            else   {
+               if(minProc->state == RUNNABLE)   {
+                   if(minProc->priority > 0)
+                      minProc->priority -= 1;
+	       } 
+            } 
+      }  
    }
- }
     release(&ptable.lock);
-
-  }
+ }
 }
 
 // Enter scheduler.  Must hold only ptable.lock
