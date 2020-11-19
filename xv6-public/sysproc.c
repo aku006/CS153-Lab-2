@@ -104,8 +104,11 @@ sys_lab2(void) {
  return 0;
 }
 
-int 
-sys_hello(void) {
- cprintf("hello from the kernel"),
- return 0;
+int
+sys_setpriority(int priority)
+{
+    if(argint(0,&priority) < 0)  {
+        return -1;
+    }
+    return setpriority(priority);
 }
