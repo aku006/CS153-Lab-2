@@ -345,7 +345,7 @@ scheduler(void)
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     p=ptable.proc;
-    while(p < &table.proc[NPROC]) {
+    while(p < &ptable.proc[NPROC]) {
 	if(p->state != RUNNABLE) {
 	  p++;
           continue;
