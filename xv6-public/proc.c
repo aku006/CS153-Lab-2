@@ -324,6 +324,7 @@ scheduler(void)
 {
   struct proc *p;
   struct cpu *c = mycpu();
+  struct proc *min_proc;
   c->proc = 0;
   
   for(;;){
@@ -332,9 +333,23 @@ scheduler(void)
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
-        continue;
+    p = ptable.proc;
+    while (p < &ptable.proc[NPROC]) {
+        if (p->state != RUNNABLE) {
+            p++;
+            continue;
+        }
+
+        for(min_proc = ptable.proc; min_proc < &ptable.proc[NPROC]; min_proc++){
+          if(min_proc->state != RUNNABLE) {
+            continue;
+          }
+          else {
+              if (min_proc->priority < p->priority) {
+                  p = min_proc;
+              }
+         }
+        }
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
@@ -545,41 +560,3 @@ int setpriority(int priority) {
 	return this_proc->priority;
 }
 
-//Custom function for setting priority
-void scheduler(void) {
-	struct proc* this_proc;
-	struct proc* min_proc;
-	struct cpu *c = mycpu();
-
-	c->proc = 0;
-
-	for(;;) {
-		sti() // Allow interrupts to occur for this process
-		acquire(&ptable.lock);
-		this_proc = ptable.proc;
-		while (this_proc < &ptable.lock[NPROC]) {
-			if (this_proc->state != RUNNABLE) {
-				p++;
-				continue;
-			}
-			for (min_proc = ptable.proc; min_proc < &ptable.proc[NPROC]; min_proc++) {
-				if (min_proc->state != RUNNABLE) {
-					continue;
-				}
-				else {
-					if (min_proc->priority < this_proc->priority) {
-						this_proc = min_proc;
-					}
-				}
-			}
-			c->proc = this_proc;
-			switchuvm(this_proc);
-			this_proc->state = RUNNING;
-			switch(&(c->scheduler), this_proc->context);
-			switchkvm();
-
-			c->proc = 0;
-		}
-		release(&ptable.lock);
-	} 
-}
