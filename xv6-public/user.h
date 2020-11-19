@@ -4,7 +4,7 @@ struct rtcdate;
 // system calls
 int fork(void);
 int exit(void) __attribute__((noreturn));
-int wait(void);
+int wait();
 int pipe(int*);
 int write(int, const void*, int);
 int read(int, void*, int);
@@ -39,4 +39,4 @@ void free(void*);
 int atoi(const char*);
 int setpriority(int priority); // We created our set priority function
 int lab2(void);
-int hello(void);
+int setpriority(int priority);
