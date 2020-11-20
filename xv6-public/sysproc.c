@@ -90,6 +90,7 @@ sys_uptime(void)
   return xticks;
 }
 
+// define setpriority, needed to get the setpriority function to work
 int 
 sys_setpriority(int priority)
 {

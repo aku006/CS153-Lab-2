@@ -37,6 +37,5 @@ void* memset(void*, int, uint);
 void* malloc(uint);
 void free(void*);
 int atoi(const char*);
-int setpriority(int priority); // We created our set priority function
-int lab2(void);
-int setpriority(int priority);
+int setpriority(int priority); // We create our set priority function here
+int lab2(void); // Needed to test the given lab 2 test file

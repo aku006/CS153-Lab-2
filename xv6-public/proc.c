@@ -310,6 +310,10 @@ wait(void)
     sleep(curproc, &ptable.lock);  //DOC: wait-sleep
   }
 }
+
+// Function for setting priority
+// Contains safe points for if the priority value somehow
+// goes either below 0 or above 31
 int setpriority(int priority)   {
     struct proc* p = myproc();
     if(priority > 31)   {
@@ -346,6 +350,8 @@ scheduler(void)
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     p=ptable.proc;
+
+	// Edited this function so that it also accounts for priority
      while(p < &ptable.proc[NPROC])   {
          if(p->state != RUNNABLE)   {
              p++;
@@ -373,6 +379,10 @@ scheduler(void)
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       c->proc = 0;
+
+      // This part of code used to help prevent starvation
+      // Does this by aging priority, so that processes don't
+      // sit in the same place forever
       for(minProc=ptable.proc; minProc < &ptable.proc[NPROC]; minProc++)  {
            if(minProc == p)   {
                 if(minProc->priority < 31)   {
